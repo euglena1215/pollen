@@ -25,6 +25,17 @@ RSpec.describe Pollen::Message do
     end
   end
 
+  describe '.topic_id' do
+    before do
+      test_message_klass = Class.new(Pollen::Message)
+      stub_const('TestMessage', test_message_klass)
+    end
+
+    it 'returns the topic id' do
+      expect(TestMessage.topic_id).to eq('pollen.TestMessage')
+    end
+  end
+
   describe '.attributes' do
     let(:test_message) do
       Class.new(Pollen::Message) do
@@ -107,6 +118,28 @@ RSpec.describe Pollen::Message do
           end
         end
       end
+    end
+  end
+
+  describe '#to_h' do
+    let(:test_message) do
+      Class.new(Pollen::Message) do
+        attribute :foo, :string
+        attribute :bar, :integer
+        attribute :baz, :float
+        attribute :qux, :boolean
+        attribute :quux, :array
+        attribute :corge, :hash
+      end
+    end
+
+    it 'returns a hash of attributes' do
+      expect(test_message.new(foo: 'bar').to_h).to include({foo: 'bar'})
+      expect(test_message.new(bar: 1).to_h).to include({bar: 1})
+      expect(test_message.new(baz: 1.0).to_h).to include({baz: 1.0})
+      expect(test_message.new(qux: true).to_h).to include({qux: true})
+      expect(test_message.new(quux: []).to_h).to include({quux: []})
+      expect(test_message.new(corge: {}).to_h).to include({corge: {}})
     end
   end
 end

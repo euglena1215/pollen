@@ -5,6 +5,13 @@ module Pollen
     class InvalidTypeError < ValidationError; end;
     class RequiredError < ValidationError; end;
 
+    TOPIC_PREFIX = "pollen"
+
+    def self.topic_id
+      # TODO: convert to snake case
+      "#{TOPIC_PREFIX}.#{self.name}"
+    end
+
     def self.attribute(name, type, options = {})
       @attributes ||= {}
       @attributes[name] = { type: type, options: options }
@@ -39,6 +46,12 @@ module Pollen
 
         validate_type!(name, value, type) unless value.nil?
         validate_options!(name, value, options)
+      end
+    end
+
+    def to_h
+      self.class.attributes.each_with_object({}) do |(name, _), hash|
+        hash[name] = send(name)
       end
     end
 

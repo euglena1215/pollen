@@ -79,6 +79,8 @@ class UserProfilePostSubscriber < Pollen::Subscriber
     UpdatePostCountJob.perform_later(message.id)
   end
 end
+
+UserProfilePostSubscriber.listen!
 ```
 
 ## Development

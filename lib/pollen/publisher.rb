@@ -10,10 +10,10 @@ module Pollen
       @message_klass || nil
     end
 
-    def self.publish(message)
+    def self.publish!(message)
       raise NotSetMessageError, "No message class defined" unless message_klass
       message.validate!
-      # TODO: Publish message to queue
+      ActiveSupport::Notifications.instrument(message.class.topic_id, message: message.to_h)
     end
   end
 end
