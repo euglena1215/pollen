@@ -1,5 +1,7 @@
 # Pollen
 
+**🚧 work in progress 🚧**
+
 Pub/Sub for Ruby on Rails on a modular monolithic architecture using `ActiveSupport::Notifications`.
 
 ## Installation
@@ -17,6 +19,20 @@ And then execute:
 Or install it yourself as:
 
     $ gem install pollen
+
+## Concepts
+### No additional middleware
+
+No additional middleware is required to use this feature, it just works with what Rails has.
+
+### Type checking
+
+Instead of just passing a Hash, the value is passed through a specific schema.
+
+### Easy to investigate
+
+Usually publishers don't care who is subscribing. 
+However, if you want to find out, you can easily do so by simply grep'ing the application code. There is no implicit mapping.
 
 ## Usage
 
