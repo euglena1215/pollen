@@ -1,8 +1,6 @@
 # Pollen
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/pollen`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Pub/Sub for Ruby on Rails on a modular monolithic architecture using `ActiveSupport::Notifications`.
 
 ## Installation
 
@@ -22,7 +20,50 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+# packs/common/app/messages/post_created_message.rb
+class PostCreatedMessage < Pollen::Message
+  attribute :id, :integer, required: true
+  attribute :title, :string, required: true
+  attribute :body, :string
+end
+```
+
+```ruby
+# packs/post/app/models/post.rb
+class Post < ApplicationRecord
+  after_create do
+    PostCreatedPublisher.publish!(
+      PostCreatedMessage.new(id: id, title: title, body: body)
+    )
+  end
+end
+```
+
+```ruby
+# packs/post/app/publishers/post_created_publisher.rb
+class PostCreatedPublisher < Pollen::Publisher
+  use_message PostCreatedMessage
+
+  # @param [PostCreatedMessage] message
+  def self.publish!(message)
+    super 
+    puts 'published!'
+  end
+end
+```
+
+```ruby
+# packs/user/app/subscribers/user_profile_post_subscriber.rb
+class UserProfilePostSubscriber < Pollen::Subscriber
+  use_message PostCreatedMessage
+  
+  # @param [PostCreatedMessage] message
+  def self.subscribe!(message)
+    UpdatePostCountJob.perform_later(message.id)
+  end
+end
+```
 
 ## Development
 
